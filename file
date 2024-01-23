@@ -1,0 +1,27 @@
+import os
+import pandas as pd
+
+# Directory to check files
+directory_path = '/path/to/directory'
+
+# Function to check file availability
+def check_file_availability(file_path):
+    return os.path.exists(file_path)
+
+# List all files in the directory
+files_in_directory = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
+
+# Create a DataFrame to store results
+file_availability_df = pd.DataFrame(columns=['File Name', 'Availability'])
+
+# Check availability for each file
+for file_name in files_in_directory:
+    file_path = os.path.join(directory_path, file_name)
+    availability = check_file_availability(file_path)
+    file_availability_df = file_availability_df.append({'File Name': file_name, 'Availability': availability}, ignore_index=True)
+
+# Export results to Excel
+excel_output_path = '/path/to/output/result.xlsx'
+file_availability_df.to_excel(excel_output_path, index=False)
+
+print(f"File availability results exported to {excel_output_path}")
