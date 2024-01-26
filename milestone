@@ -1,0 +1,19 @@
+df = pd.read_csv('your_input_file.csv')  # Replace with the actual filename
+
+# Convert the date column to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Define the time range for the next hour
+now = datetime.now()
+end_time = now + timedelta(hours=1)
+
+# Check if there is data within the next hour
+filtered_df = df[(df['Date'] >= now) & (df['Date'] <= end_time)]
+
+# If no data is found, extend the time range to the following hour
+if filtered_df.empty:
+    end_time = end_time + timedelta(hours=1)
+    filtered_df = df[(df['Date'] >= now) & (df['Date'] <= end_time)]
+
+# Save the filtered data to a new CSV file
+filtered_df.to_csv('filtered_data.csv', index=False)
