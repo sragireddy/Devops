@@ -1,3 +1,8 @@
+import os
+import csv
+from datetime import datetime
+
+# List of directories to check files
 directories_to_check = ['/path/to/cme_directory', '/path/to/occ_directory', '/path/to/ice_directory']
 
 # Function to check file availability
@@ -14,6 +19,13 @@ csv_file_names = {
     '/path/to/ice_directory': 'ice.csv',
 }
 
+# Define file prefixes for each directory
+file_prefixes = {
+    '/path/to/cme_directory': 'ent',
+    '/path/to/occ_directory': 'inr',
+    '/path/to/ice_directory': 'pnt',
+}
+
 # Iterate through directories
 for directory_path in directories_to_check:
     # List all files in the directory
@@ -22,15 +34,15 @@ for directory_path in directories_to_check:
     # Create a list to store results
     file_availability_data = []
 
-    # Check availability for each file created today
+    # Check availability for each file created today and matches the prefix
     for file_name in files_in_directory:
         file_path = os.path.join(directory_path, file_name)
         
         # Get the file creation time
         file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
         
-        # Check if the file was created today
-        if file_creation_time.strftime('%Y-%m-%d') == today_date:
+        # Check if the file was created today and matches the prefix
+        if file_creation_time.strftime('%Y-%m-%d') == today_date and file_name.startswith(file_prefixes[directory_path]):
             availability = check_file_availability(file_path)
             file_availability_data.append({'File Name': file_name, 'Availability': availability})
 
