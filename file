@@ -1,9 +1,4 @@
-import os
-import csv
-from datetime import datetime
-
-# Directory to check files
-directory_path = '/path/to/directory'
+directories_to_check = ['/path/to/cme_directory', '/path/to/occ_directory', '/path/to/ice_directory']
 
 # Function to check file availability
 def check_file_availability(file_path):
@@ -12,31 +7,42 @@ def check_file_availability(file_path):
 # Get today's date in the format YYYY-MM-DD
 today_date = datetime.now().strftime('%Y-%m-%d')
 
-# List all files in the directory
-files_in_directory = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
+# Define CSV file names for each directory
+csv_file_names = {
+    '/path/to/cme_directory': 'cme.csv',
+    '/path/to/occ_directory': 'occ.csv',
+    '/path/to/ice_directory': 'ice.csv',
+}
 
-# Create a list to store results
-file_availability_data = []
+# Iterate through directories
+for directory_path in directories_to_check:
+    # List all files in the directory
+    files_in_directory = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
 
-# Check availability for each file created today
-for file_name in files_in_directory:
-    file_path = os.path.join(directory_path, file_name)
+    # Create a list to store results
+    file_availability_data = []
+
+    # Check availability for each file created today
+    for file_name in files_in_directory:
+        file_path = os.path.join(directory_path, file_name)
+        
+        # Get the file creation time
+        file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
+        
+        # Check if the file was created today
+        if file_creation_time.strftime('%Y-%m-%d') == today_date:
+            availability = check_file_availability(file_path)
+            file_availability_data.append({'File Name': file_name, 'Availability': availability})
+
+    # Get the specified CSV file name for the directory
+    csv_output_path = os.path.join('/path/to/output/', csv_file_names.get(directory_path, f'output_default.csv'))
     
-    # Get the file creation time
-    file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
-    
-    # Check if the file was created today
-    if file_creation_time.strftime('%Y-%m-%d') == today_date:
-        availability = check_file_availability(file_path)
-        file_availability_data.append({'File Name': file_name, 'Availability': availability})
+    # Export results to CSV
+    field_names = ['File Name', 'Availability']
 
-# Export results to CSV
-csv_output_path = f'/path/to/output/{today_date}_file_availability.csv'
-field_names = ['File Name', 'Availability']
+    with open(csv_output_path, mode='w', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=field_names)
+        writer.writeheader()
+        writer.writerows(file_availability_data)
 
-with open(csv_output_path, mode='w', newline='') as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=field_names)
-    writer.writeheader()
-    writer.writerows(file_availability_data)
-
-print(f"File availability results for today exported to {csv_output_path}")
+    print(f"File availability results for today in {directory_path} exported to {csv_output_path}")
