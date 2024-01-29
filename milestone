@@ -1,28 +1,40 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
-# Read the CSV file
-df = pd.read_csv('your_input_file.csv')  # Replace with the actual filename
+# Specify the files and their corresponding date columns
+files_and_date_columns = {
+    'file1.csv': 'DateColumn1',
+    'file2.csv': 'DateColumn2',
+    'file3.csv': 'DateColumn3',
+    # Add more files and date columns as needed
+}
 
-# Convert the date column to datetime format
-df['Date'] = pd.to_datetime(df['Date'])
+# Iterate through each specified file and date column
+for filename, date_column in files_and_date_columns.items():
+    # Read the CSV file
+    df = pd.read_csv(filename)
 
-# Define the time range for the next hour
-now = datetime.now()
-end_time = now + timedelta(hours=1)
+    # Convert the custom date column to datetime format
+    df[date_column] = pd.to_datetime(df[date_column])
 
-found_data = False
+    # Define the time range for the next hour
+    now = datetime.now()
+    end_time = now + timedelta(hours=1)
 
-while not found_data:
-    # Check if there is data within the current time range
-    filtered_df = df[(df['Date'] >= now) & (df['Date'] <= end_time)]
+    found_data = False
 
-    # If data is found, exit the loop
-    if not filtered_df.empty:
-        found_data = True
-    else:
-        # Extend the time range to the following hour
-        end_time = end_time + timedelta(hours=1)
+    while not found_data:
+        # Check if there is data within the current time range
+        filtered_df = df[(df[date_column] >= now) & (df[date_column] <= end_time)]
 
-# Save the filtered data to a new CSV file
-filtered_df.to_csv('filtered_data.csv', index=False)
+        # If data is found, exit the loop
+        if not filtered_df.empty:
+            found_data = True
+        else:
+            # Extend the time range to the following hour
+            end_time = end_time + timedelta(hours=1)
+
+    # Save the filtered data to a new CSV file
+    output_file_path = f'filtered_{filename}'
+    filtered_df.to_csv(output_file_path, index=False)
+
