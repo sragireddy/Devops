@@ -12,15 +12,8 @@ def check_file_availability(file_path):
 # Get today's date in the format YYYY-MM-DD
 today_date = datetime.now().strftime('%Y-%m-%d')
 
-# Define CSV file names for each directory
-csv_file_names = {
-    '/path/to/cme_directory': 'cme.csv',
-    '/path/to/occ_directory': 'occ.csv',
-    '/path/to/ice_directory': 'ice.csv',
-}
-
-# Define file prefixes for each directory
-file_prefixes = {
+# Mapping of directory prefixes to file prefixes
+directory_prefix_mapping = {
     '/path/to/cme_directory': 'ent',
     '/path/to/occ_directory': 'inr',
     '/path/to/ice_directory': 'pnt',
@@ -42,12 +35,12 @@ for directory_path in directories_to_check:
         file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
         
         # Check if the file was created today and matches the prefix
-        if file_creation_time.strftime('%Y-%m-%d') == today_date and file_name.startswith(file_prefixes[directory_path]):
+        if file_creation_time.strftime('%Y-%m-%d') == today_date and file_name.startswith(directory_prefix_mapping[directory_path]):
             availability = check_file_availability(file_path)
             file_availability_data.append({'File Name': file_name, 'Availability': availability})
 
     # Get the specified CSV file name for the directory
-    csv_output_path = os.path.join('/path/to/output/', f'{directory_keys[directory_path]}.csv')
+    csv_output_path = os.path.join('/path/to/output/', f'{directory_path.split("/")[-1]}.csv')
     
     # Export results to CSV
     field_names = ['File Name', 'Availability']
