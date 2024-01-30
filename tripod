@@ -1,22 +1,37 @@
 import csv
 
-def count_rows(csv_file_path):
+def sum_and_count_rows(csv_file_path):
     try:
         with open(csv_file_path, 'r', newline='') as file:
-            reader = csv.reader(file)
+            reader = csv.DictReader(file)
             # Skip the header if present
-            header = next(reader, None)
-            row_count = sum(1 for row in reader)
-        return row_count
+            header = reader.fieldnames
+            if "BAL_DIFF" not in header:
+                print("Error: 'BAL_DIFF' column not found in the CSV.")
+                return 0, 0
+            
+            total_rows = 0
+            total_balance_diff = 0
+            
+            for row in reader:
+                total_rows += 1
+                try:
+                    balance_diff = float(row["BAL_DIFF"])
+                    total_balance_diff += balance_diff
+                except ValueError:
+                    print(f"Error parsing 'BAL_DIFF' in row {total_rows}: {row['BAL_DIFF']}. Skipping this row.")
+                    
+        return total_rows, total_balance_diff
     except FileNotFoundError:
         print(f"The file {csv_file_path} was not found.")
-        return 0
+        return 0, 0
     except Exception as e:
         print(f"An error occurred: {e}")
-        return 0
+        return 0, 0
 
 # Example usage
 csv_file_path = 'your_file.csv'  # Replace with your CSV file path
-rows_count = count_rows(csv_file_path)
+rows_count, balance_diff_sum = sum_and_count_rows(csv_file_path)
 
 print(f"Number of rows in {csv_file_path}: {rows_count}")
+print(f"Sum of 'BAL_DIFF' column: {balance_diff_sum}")
