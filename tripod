@@ -1,15 +1,22 @@
 import csv
 
-def sum_and_count_rows(csv_file_path):
+def sum_and_count_rows(input_csv_file, output_csv_file):
     try:
-        with open(csv_file_path, 'r', newline='') as file:
-            reader = csv.DictReader(file)
-            # Skip the header if present
+        with open(input_csv_file, 'r', newline='') as input_file, \
+             open(output_csv_file, 'w', newline='') as output_file:
+            reader = csv.DictReader(input_file)
+            
+            # Check if 'BAL_DIFF' column exists
             header = reader.fieldnames
             if "BAL_DIFF" not in header:
                 print("Error: 'BAL_DIFF' column not found in the CSV.")
-                return 0, 0
+                return
             
+            # Prepare output CSV writer
+            output_fieldnames = ['Total Rows', 'Sum of BAL_DIFF']
+            writer = csv.DictWriter(output_file, fieldnames=output_fieldnames)
+            writer.writeheader()
+
             total_rows = 0
             total_balance_diff = 0
             
@@ -21,17 +28,17 @@ def sum_and_count_rows(csv_file_path):
                 except ValueError:
                     print(f"Error parsing 'BAL_DIFF' in row {total_rows}: {row['BAL_DIFF']}. Skipping this row.")
                     
-        return total_rows, total_balance_diff
+            # Write results to the output CSV file
+            writer.writerow({'Total Rows': total_rows, 'Sum of BAL_DIFF': total_balance_diff})
+            print(f"Results written to {output_csv_file}")
+            
     except FileNotFoundError:
-        print(f"The file {csv_file_path} was not found.")
-        return 0, 0
+        print(f"The file {input_csv_file} was not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
-        return 0, 0
 
 # Example usage
-csv_file_path = 'your_file.csv'  # Replace with your CSV file path
-rows_count, balance_diff_sum = sum_and_count_rows(csv_file_path)
+input_csv_file = 'your_input_file.csv'    # Replace with your input CSV file path
+output_csv_file = 'output_summary.csv'     # Replace with desired output CSV file path
 
-print(f"Number of rows in {csv_file_path}: {rows_count}")
-print(f"Sum of 'BAL_DIFF' column: {balance_diff_sum}")
+sum_and_count_rows(input_csv_file, output_csv_file)
