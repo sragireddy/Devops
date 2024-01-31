@@ -48,31 +48,23 @@ sum_and_count_rows(input_csv_file, output_csv_file)
 
 import csv
 
-def write_to_csv(data, filename):
-    # Open the CSV file in write mode
-    with open(filename, 'w', newline='') as csvfile:
-        # Create a CSV writer object
-        csv_writer = csv.writer(csvfile)
-        
-        # Write header if needed
-        # csv_writer.writerow(['Column1', 'Column2', 'Column3', ...])
+import pandas as pd
 
-        # Write data to the CSV file
-        csv_writer.writerows(data)
+# Example DataFrame
+data = {
+    'Name': ['John', 'Jane', 'Bob'],
+    'Age': [25, 30, 22],
+    'City': ['New York', 'San Francisco', 'Los Angeles']
+}
 
-# Example data
-example_data = [
-    ['Name', 'Age', 'City'],
-    ['John', 25, 'New York'],
-    ['Jane', 30, 'San Francisco'],
-    ['Bob', 22, 'Los Angeles']
-]
+df = pd.DataFrame(data)
 
 # Specify the filename
 csv_filename = 'output.csv'
 
-# Write the data to the CSV file
-write_to_csv(example_data, csv_filename)
+# Write the DataFrame to a CSV file
+df.to_csv(csv_filename, index=False)
 
 print(f'CSV file "{csv_filename}" created successfully.')
+
 
