@@ -67,4 +67,58 @@ df.to_csv(csv_filename, index=False)
 
 print(f'CSV file "{csv_filename}" created successfully.')
 
+-------------------------------------------------------------------------
+
+import csv
+
+def sum_by_currency(input_csv_file, output_csv_file):
+    try:
+        with open(input_csv_file, 'r', newline='') as input_file, \
+             open(output_csv_file, 'w', newline='') as output_file:
+            reader = csv.DictReader(input_file)
+            
+            # Check if 'BAL_DIFF' and 'CCY_CDE' columns exist
+            header = reader.fieldnames
+            if "BAL_DIFF" not in header or "CCY_CDE" not in header:
+                print("Error: 'BAL_DIFF' or 'CCY_CDE' columns not found in the CSV.")
+                return
+            
+            # Prepare output CSV writer
+            output_fieldnames = ['CCY_CDE', 'Sum of BAL_DIFF']
+            writer = csv.DictWriter(output_file, fieldnames=output_fieldnames)
+            writer.writeheader()
+
+            sums_by_currency = {}
+            
+            for row in reader:
+                try:
+                    balance_diff = float(row["BAL_DIFF"])
+                    currency_code = row["CCY_CDE"]
+                    
+                    if currency_code not in sums_by_currency:
+                        sums_by_currency[currency_code] = 0
+                        
+                    sums_by_currency[currency_code] += balance_diff
+                    
+                except ValueError:
+                    print(f"Error parsing 'BAL_DIFF' in row {reader.line_num}: {row['BAL_DIFF']}. Skipping this row.")
+            
+            # Write results to the output CSV file
+            for currency_code, balance_diff_sum in sums_by_currency.items():
+                writer.writerow({'CCY_CDE': currency_code, 'Sum of BAL_DIFF': balance_diff_sum})
+                
+            print(f"Results written to {output_csv_file}")
+            
+    except FileNotFoundError:
+        print(f"The file {input_csv_file} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+# Example usage
+input_csv_file = 'your_input_file.csv'    # Replace with your input CSV file path
+output_csv_file = 'output_summary_by_currency.csv'  # Replace with desired output CSV file path
+
+sum_by_currency(input_csv_file, output_csv_file)
+
+
 
