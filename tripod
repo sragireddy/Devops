@@ -373,3 +373,74 @@ output_csv_file = 'output_summary_by_ccy_bal_diff.csv'  # Replace with desired o
 
 sum_and_count_by
 
+
+/---/----/
+
+import csv
+
+def sum_and_count_by_currency(input_csv_file, output_csv_file):
+    # Example mapping of currency codes to names
+    currency_names = {
+        'USD': 'US Dollar',
+        'EUR': 'Euro',
+        'GBP': 'British Pound',
+        # Add more currencies as needed
+    }
+    
+    try:
+        with open(input_csv_file, 'r', newline='') as input_file, \
+             open(output_csv_file, 'w', newline='') as output_file:
+            reader = csv.DictReader(input_file)
+            
+            # Check if 'CCY_CDE' column exists
+            header = reader.fieldnames
+            if "CCY_CDE" not in header:
+                print("Error: 'CCY_CDE' column not found in the CSV.")
+                return
+            
+            # Prepare output CSV writer
+            output_fieldnames = ['CCY', 'Count', 'Sum of BAL_DIFF']
+            writer = csv.DictWriter(output_file, fieldnames=output_fieldnames)
+            writer.writeheader()
+
+            counts_by_currency = {}
+            sums_by_currency = {}
+            
+            for row in reader:
+                try:
+                    balance_diff = float(row.get("BAL_DIFF", 0))  # Default to 0 if BAL_DIFF is not present or cannot be converted to float
+                    currency_code = row["CCY_CDE"]
+                    currency_name = currency_names.get(currency_code, 'N/A')
+                    ccy_bal_diff = f"{balance_diff} {currency_code}"
+                    
+                    # Update count
+                    counts_by_currency[ccy_bal_diff] = counts_by_currency.get(ccy_bal_diff, 0) + 1
+                    
+                    # Update sum
+                    sums_by_currency[ccy_bal_diff] = sums_by_currency.get(ccy_bal_diff, 0) + balance_diff
+                    
+                except ValueError:
+                    print(f"Error parsing 'BAL_DIFF' in row {reader.line_num}: {row.get('BAL_DIFF', 'N/A')}. Skipping this row.")
+            
+            # Write results to the output CSV file
+            for ccy_bal_diff, count in counts_by_currency.items():
+                writer.writerow({
+                    'CCY': ccy_bal_diff,
+                    'Count': count,
+                    'Sum of BAL_DIFF': sums_by_currency.get(ccy_bal_diff, 0)
+                })
+                
+            print(f"Results written to {output_csv_file}")
+            
+    except FileNotFoundError:
+        print(f"The file {input_csv_file} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+# Example usage
+input_csv_file = 'your_input_file.csv'    # Replace with your input CSV file path
+output_csv_file = 'output_summary_by_ccy_count.csv'  # Replace with desired output CSV file path
+
+sum_and_count_by_currency(input_csv_file, output_csv_file)
+
+
