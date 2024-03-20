@@ -1,0 +1,18 @@
+{
+  "Facet": "HOST",
+  "resources": [
+    "ivapp1245360.howard.ms.com",
+    "ivapp1299653.howard.ms.com"
+  ],
+  "metrics": [
+    "system.uptime",
+    "system.cpu.load[,avg1]",
+    "system.cpu.util[,system,avg5]",
+    "system.cpu.util[,user,avg5]",
+    "vfs.fs.size[/,pused]",
+    "ms.vm.memory.size[pavailable]",
+    "nic.bandwidth[eth*,pused]"
+  ],
+  "aggtype": "Last",
+  "interval": "1m"
+}
