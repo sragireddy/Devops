@@ -2,7 +2,7 @@ import os
 import csv
 from datetime import datetime
 
-def check_files_availability(directory):
+def check_files_availability(directory, output_csv):
     # Get today's date
     today = datetime.today().date()
 
@@ -15,8 +15,7 @@ def check_files_availability(directory):
     ]
 
     # Prepare CSV file
-    csv_file = "file_availability.csv"
-    with open(csv_file, 'w', newline='') as csvfile:
+    with open(output_csv, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['File Name', 'Availability'])
 
@@ -34,4 +33,5 @@ def check_files_availability(directory):
 
 if __name__ == "__main__":
     directory = "/path/to/your/directory"  # Replace with the directory path
-    check_files_availability(directory)
+    output_csv = "/path/to/output/file_availability.csv"  # Replace with the desired output CSV path
+    check_files_availability(directory, output_csv)
