@@ -3,21 +3,25 @@ from datetime import datetime
 
 def check_files_availability(directory):
     # Get today's date
-    today = datetime.today().strftime('%Y-%m-%d')
+    today = datetime.today().date()
 
-    # List of file names with today's timestamp
+    # List of file names
     file_names = [
-        f"file1_{today}.txt",
-        f"file2_{today}.txt",
-        f"file3_{today}.txt",
-        f"file4_{today}.txt"
+        "file1.txt",
+        "file2.txt",
+        "file3.txt",
+        "file4.txt"
     ]
 
-    # Check if each file exists
+    # Check if each file was created or modified today
     for file_name in file_names:
         file_path = os.path.join(directory, file_name)
         if os.path.exists(file_path):
-            print("1")
+            file_time = datetime.fromtimestamp(os.path.getmtime(file_path)).date()
+            if file_time == today:
+                print("1")
+            else:
+                print("0")
         else:
             print("0")
 
