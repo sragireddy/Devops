@@ -3,12 +3,9 @@ import csv
 from datetime import datetime
 
 def check_files_availability(directory, output_csv):
-    # Get today's date
-    today = datetime.today().date()
-    now = datetime.now()
-
-    # Check if it's after 9 PM
-    after_nine_pm = now.hour >= 21
+    # Get today's date and time
+    today = datetime.today()
+    nine_pm_today = datetime(today.year, today.month, today.day, 21, 0, 0)
 
     # List of file names
     file_names = [
@@ -23,20 +20,17 @@ def check_files_availability(directory, output_csv):
         writer = csv.writer(csvfile)
         writer.writerow(['File Name', 'Availability'])
 
-        # Check if each file was created or modified today
+        # Check if each file was created or modified today after 9 PM
         for file_name in file_names:
             file_path = os.path.join(directory, file_name)
             if os.path.exists(file_path):
-                file_time = datetime.fromtimestamp(os.path.getmtime(file_path)).date()
-                if file_time == today:
-                    if after_nine_pm:
-                        writer.writerow([file_name, '2'])
-                    else:
-                        writer.writerow([file_name, '1'])
+                modified_time = datetime.fromtimestamp(os.path.getmtime(file_path))
+                if modified_time.date() == today.date() and modified_time >= nine_pm_today:
+                    writer.writerow([file_name, '2'])  # File modified after 9 PM today
                 else:
-                    writer.writerow([file_name, '0'])
+                    writer.writerow([file_name, '1'])  # File available but not after 9 PM
             else:
-                writer.writerow([file_name, '0'])
+                writer.writerow([file_name, '0'])  # File not available
 
 if __name__ == "__main__":
     directory = "/path/to/your/directory"  # Replace with the directory path
