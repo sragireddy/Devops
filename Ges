@@ -1,0 +1,43 @@
+import sqlite3
+from datetime import datetime
+
+def check_sql_output(db_path, sql_query):
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    try:
+        # Execute the SQL query
+        cursor.execute(sql_query)
+        result = cursor.fetchone()
+        
+        # Get the current time
+        current_time = datetime.now()
+        
+        if result is None or len(result) == 0:
+            # No output from the SQL query
+            if current_time.hour >= 14:  # Check if it's after 2 PM
+                return "breach"
+            else:
+                return "waiting"
+        else:
+            # Check the value of the output
+            output = result[0]
+            if output == 1:
+                if current_time.hour >= 14:  # Check if it's after 2 PM
+                    return "breach"
+                else:
+                    return "green"
+            else:
+                # Handle unexpected output
+                return "unexpected output"
+    finally:
+        # Close the database connection
+        conn.close()
+
+# Example usage
+db_path = 'path_to_your_database.db'
+sql_query = 'SELECT your_column FROM your_table LIMIT 1;'  # Replace with your actual SQL query
+
+result = check_sql_output(db_path, sql_query)
+print(result)
