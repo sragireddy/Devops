@@ -41,3 +41,35 @@ sql_query = 'SELECT your_column FROM your_table LIMIT 1;'  # Replace with your a
 
 result = check_sql_output(db_path, sql_query)
 print(result)
+
+
+----
+
+
+
+from datetime import datetime
+
+def check_output(output):
+    # Get the current time
+    current_time = datetime.now()
+
+    if output is None or output == 0:
+        # No output or output is 0
+        if current_time.hour >= 14:  # Check if it's after 2 PM
+            return "breach"
+        else:
+            return "waiting"
+    elif output == 1:
+        if current_time.hour >= 14:  # Check if it's after 2 PM
+            return "breach"
+        else:
+            return "green"
+    else:
+        # Handle unexpected output
+        return "unexpected output"
+
+# Example usage
+output_value = None  # Replace with the actual output value
+result = check_output(output_value)
+print(result)
+
