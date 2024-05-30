@@ -195,5 +195,71 @@ with open(csv_file, mode='w', newline='') as file:
 
 print(f"Results have been written to the fifth column of {csv_file}")
 
+-------
+
+
+import sqlite3  # Use the appropriate database connector for your database (e.g., psycopg2 for PostgreSQL)
+import csv
+from datetime import datetime
+
+# Define your database connection and query details
+DATABASE = 'your_database.db'
+QUERY = 'SELECT * FROM your_table WHERE column_name = ?'
+
+# Define the corresponding time conditions for each input
+time_conditions = [
+    datetime.now().replace(hour=14, minute=0, second=0, microsecond=0),  # Condition for input1
+    datetime.now().replace(hour=13, minute=0, second=0, microsecond=0),  # Condition for input2
+    datetime.now().replace(hour=15, minute=0, second=0, microsecond=0),  # Condition for input3
+    datetime.now().replace(hour=12, minute=0, second=0, microsecond=0),  # Condition for input4
+    datetime.now().replace(hour=16, minute=0, second=0, microsecond=0)   # Condition for input5
+]
+
+# Function to execute the query and get results from the database
+def execute_query(input_value):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute(QUERY, (input_value,))
+    result = cursor.fetchall()
+    conn.close()
+    return result
+
+# Specify the CSV file
+csv_file = 'your_file.csv'
+
+# Read the input values from the CSV file
+with open(csv_file, mode='r') as file:
+    reader = csv.reader(file)
+    rows = list(reader)
+
+# Iterate over each row and check the result
+for i, row in enumerate(rows):
+    if i == 0:  # Skip the header row
+        row.append('Result')  # Add a header for the results column
+        continue
+
+    input_value = row[0]  # Assuming the input value is in the first column
+    current_time = datetime.now()
+    result = execute_query(input_value)
+    
+    # Determine the result based on the conditions
+    time_condition = time_conditions[i - 1]  # Adjust for zero-based index
+    if not result:
+        if current_time < time_condition:
+            row.append('waiting')
+        else:
+            row.append('breach')
+    else:
+        if len(result) == 2 and current_time < time_condition:
+            row.append('good')
+        else:
+            row.append('not good')
+
+# Write the results back to the CSV file
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(rows)
+
+print(f"Results have been written to the fifth column of {csv_file}")
 
 
