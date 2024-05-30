@@ -125,3 +125,75 @@ for input_value, time_condition in zip(inputs, time_conditions):
         else:
             print(f"For input '{input_value}': not good")
 
+
+
+
+--------
+
+
+import csv
+from datetime import datetime
+
+# Define the corresponding time conditions for each input
+time_conditions = [
+    datetime.now().replace(hour=14, minute=0, second=0, microsecond=0),  # Condition for input1
+    datetime.now().replace(hour=13, minute=0, second=0, microsecond=0),  # Condition for input2
+    datetime.now().replace(hour=15, minute=0, second=0, microsecond=0),  # Condition for input3
+    datetime.now().replace(hour=12, minute=0, second=0, microsecond=0),  # Condition for input4
+    datetime.now().replace(hour=16, minute=0, second=0, microsecond=0)   # Condition for input5
+]
+
+# Function to simulate getting a result for each input
+def get_result(input_value):
+    # Placeholder for actual result logic; this should return an empty list or a list with results
+    # Here, we return an empty list for demonstration purposes
+    if input_value == 'input1':
+        return []  # Simulate no results
+    elif input_value == 'input2':
+        return [1, 2]  # Simulate results
+    elif input_value == 'input3':
+        return []  # Simulate no results
+    elif input_value == 'input4':
+        return [1]  # Simulate not good results
+    elif input_value == 'input5':
+        return [1, 2]  # Simulate good results
+
+# Specify the CSV file
+csv_file = 'your_file.csv'
+
+# Read the input values from the CSV file
+with open(csv_file, mode='r') as file:
+    reader = csv.reader(file)
+    rows = list(reader)
+
+# Iterate over each row and check the result
+for i, row in enumerate(rows):
+    if i == 0:  # Skip the header row
+        continue
+
+    input_value = row[0]  # Assuming the input value is in the first column
+    current_time = datetime.now()
+    result = get_result(input_value)
+    
+    # Determine the result based on the conditions
+    time_condition = time_conditions[i - 1]  # Adjust for zero-based index
+    if not result:
+        if current_time < time_condition:
+            row[4] = 'waiting'
+        else:
+            row[4] = 'breach'
+    else:
+        if len(result) == 2 and current_time < time_condition:
+            row[4] = 'good'
+        else:
+            row[4] = 'not good'
+
+# Write the results back to the CSV file
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(rows)
+
+print(f"Results have been written to the fifth column of {csv_file}")
+
+
+
