@@ -37,3 +37,26 @@ with open(csv_file, mode='w', newline='') as file:
         writer.writerow([file_name])
 
 print(f'List of files created in the last 24 hours has been saved to {csv_file}')
+
+
+
+
+-------
+
+from flask import Flask, request, Response
+import requests
+
+app = Flask(__name__)
+
+@app.route('/proxy')
+def proxy():
+    url = request.args.get('url')
+    if not url:
+        return "URL parameter is required", 400
+
+    response = ur requests.get(url)
+    return Response(response.content, status=response.status_code, headers=dict(response.headers))
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
