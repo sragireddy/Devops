@@ -1,0 +1,38 @@
+import os
+import csv
+from datetime import datetime, timedelta
+
+# Define the directory to search
+directory_to_search = '.'  # You can change this to any directory you want
+
+# Get the current time
+now = datetime.now()
+
+# Get the time 24 hours ago
+time_24_hours_ago = now - timedelta(days=1)
+
+# List to hold the file details
+files_created_last_24_hours = []
+
+# Walk through the directory
+for root, dirs, files in os.walk(directory_to_search):
+    for file in files:
+        file_path = os.path.join(root, file)
+        # Get the file creation time
+        file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
+        # Check if the file was created in the last 24 hours
+        if file_creation_time > time_24_hours_ago:
+            files_created_last_24_hours.append((file, file_path, file_creation_time.strftime('%Y-%m-%d %H:%M:%S')))
+
+# Define the CSV file to save the results
+csv_file = 'files_created_last_24_hours.csv'
+
+# Write the results to the CSV file
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    # Write the header
+    writer.writerow(['File Name', 'File Path', 'Creation Time'])
+    # Write the file details
+    writer.writerows(files_created_last_24_hours)
+
+print(f'List of files created in the last 24 hours has been saved to {csv_file}')
