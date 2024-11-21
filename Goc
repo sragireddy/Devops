@@ -6,16 +6,14 @@ with open('demo.text', 'r') as demo_file:
 with open('demo1.text', 'r') as demo1_file:
     demo1_lines = demo1_file.readlines()
 
-# Assuming demo1.text contains the two values (9765, 6864) on separate lines
-value_jan = demo1_lines[0].strip()  # 9765 from demo1.text
-value_feb = demo1_lines[1].strip()  # 6864 from demo1.text
+# Ensure the demo1.text has enough values to replace the lines in demo.text
+if len(demo_lines) != len(demo1_lines):
+    raise ValueError("The number of lines in demo.text and demo1.text do not match.")
 
-# Modify the lines in demo.text
+# Modify the lines in demo.text by adding the corresponding values from demo1.text
 for i in range(len(demo_lines)):
-    if "Jan" in demo_lines[i]:
-        demo_lines[i] = f"Jan= http//{value_jan}\n"
-    elif "Feb" in demo_lines[i]:
-        demo_lines[i] = f"Feb= http//{value_feb}\n"
+    # Strip any leading/trailing whitespace from both demo1_lines and demo_lines
+    demo_lines[i] = demo_lines[i].split('=')[0] + "= http//" + demo1_lines[i].strip() + "\n"
 
 # Write the modified lines back to demo.text
 with open('demo.text', 'w') as demo_file:
