@@ -1,0 +1,24 @@
+# Read the contents of demo.text
+with open('demo.text', 'r') as demo_file:
+    demo_lines = demo_file.readlines()
+
+# Read the contents of demo1.text
+with open('demo1.text', 'r') as demo1_file:
+    demo1_lines = demo1_file.readlines()
+
+# Assuming demo1.text contains the two values (9765, 6864) on separate lines
+value_jan = demo1_lines[0].strip()  # 9765 from demo1.text
+value_feb = demo1_lines[1].strip()  # 6864 from demo1.text
+
+# Modify the lines in demo.text
+for i in range(len(demo_lines)):
+    if "Jan" in demo_lines[i]:
+        demo_lines[i] = f"Jan= http//{value_jan}\n"
+    elif "Feb" in demo_lines[i]:
+        demo_lines[i] = f"Feb= http//{value_feb}\n"
+
+# Write the modified lines back to demo.text
+with open('demo.text', 'w') as demo_file:
+    demo_file.writelines(demo_lines)
+
+print("File updated successfully.")
